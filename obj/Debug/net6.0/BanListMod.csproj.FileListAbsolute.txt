@@ -1,0 +1,10 @@
+c:\Users\Admin\Desktop\banlist\obj\Debug\net6.0\BanListMod.csproj.AssemblyReference.cache
+c:\Users\Admin\Desktop\banlist\obj\Debug\net6.0\BanListMod.GeneratedMSBuildEditorConfig.editorconfig
+c:\Users\Admin\Desktop\banlist\obj\Debug\net6.0\BanListMod.AssemblyInfoInputs.cache
+c:\Users\Admin\Desktop\banlist\obj\Debug\net6.0\BanListMod.AssemblyInfo.cs
+c:\Users\Admin\Desktop\banlist\obj\Debug\net6.0\BanListMod.csproj.CoreCompileInputs.cache
+c:\Users\Admin\Desktop\banlist\bin\Debug\net6.0\BanListMod.deps.json
+c:\Users\Admin\Desktop\banlist\bin\Debug\net6.0\BanListMod.dll
+c:\Users\Admin\Desktop\banlist\obj\Debug\net6.0\BanListMod.dll
+c:\Users\Admin\Desktop\banlist\obj\Debug\net6.0\refint\BanListMod.dll
+c:\Users\Admin\Desktop\banlist\obj\Debug\net6.0\ref\BanListMod.dll
