@@ -41,7 +41,7 @@ public static class Options
     // since free-text input fields turned out to be unreliable in this
     // IL2CPP build — see WelcomeMessage comment history).
     public static bool SendWelcomeMessage = false;
-    public static string WelcomeMessage = "Welcome! Type /banlisthelp for available commands.";
+    public static string WelcomeMessage = "Welcome!.";
 
     // Settings-menu hotkey, stored as a KeyCode name (e.g. "Delete", "F8", "Insert").
     // Parsed/validated in BanListSettingsUi; falls back to Delete if invalid.
