@@ -23,7 +23,8 @@ no extra BS
 <img width="959" height="442" alt="image" src="https://github.com/user-attachments/assets/350fb3ac-c94b-4899-ba05-95b57d8b30b6" />
 
 <img width="939" height="707" alt="image" src="https://github.com/user-attachments/assets/54c32ef4-e98c-4747-a600-119370cfdafb" />
-<small>Known issue: if you ban someone via the chat votekick menu who has already left the game, the ban button will not be illuminated, but it still adds them to your ban list as expected.</small>
+
+<sub>Known issue: if you ban someone via the chat votekick menu who has already left the game, the ban button will not be illuminated, but it still adds them to your ban list as expected.</sub>
 
 
 </div>
@@ -42,7 +43,7 @@ Uses the same file structure/file names as BanMod and both versions of Among Us 
 
 DenyName list does not ban specific players, but disallows ANYONE with that name. Tired of Trump, Epstein, and Diddy, etc? Never ever want to see another fake Ssundee or Elegance? this is how you keep them out!
 
-<small>Untested but should work: the moderator system. Add someone to your moderator list, and they *should* be able to also kick/ban people in your stead.</small>
+<sub>Untested but should work: the moderator system. Add someone to your moderator list, and they *should* be able to also kick/ban people in your stead.</sub>
 
 
 
