@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\BanListMod.csproj": {}
+    "c:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\BanListMod.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\BanListMod.csproj": {
+    "c:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\BanListMod.csproj": {
       "version": "1.0.1",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\BanListMod.csproj",
+        "projectUniqueName": "c:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\BanListMod.csproj",
         "projectName": "BanListMod",
-        "projectPath": "C:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\BanListMod.csproj",
+        "projectPath": "c:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\BanListMod.csproj",
         "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\obj\\",
+        "outputPath": "c:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config"

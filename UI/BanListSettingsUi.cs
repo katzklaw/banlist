@@ -124,18 +124,6 @@ public class BanListSettingsUi : MonoBehaviour
         }
 
         GUILayout.Space(10);
-        GUILayout.Label("Recently Left", HeaderStyle());
-        try
-        {
-            DrawRecentlyLeftList();
-        }
-        catch (Exception ex)
-        {
-            BMLogger.Exception("[BanListMod] Error drawing Recently Left section", ex);
-            GUILayout.Label("(error rendering recently-left list - see log)", SmallLabelStyle());
-        }
-
-        GUILayout.Space(10);
         GUILayout.Label("Ban List / Deny List", HeaderStyle());
         Options.CheckBanList = GUILayout.Toggle(Options.CheckBanList, " Enforce ban list on join");
         Options.CheckBlockList = GUILayout.Toggle(Options.CheckBlockList, " Auto-ban players on your platform block list");
@@ -289,6 +277,19 @@ public class BanListSettingsUi : MonoBehaviour
             "/id\n" +
             "/banlisthelp",
             SmallLabelStyle());
+
+        GUILayout.Space(10);
+        GUILayout.Label("Recently Left", HeaderStyle());
+        GUILayout.Label("Entries drop off automatically after 3 games.", SmallLabelStyle());
+        try
+        {
+            DrawRecentlyLeftList();
+        }
+        catch (Exception ex)
+        {
+            BMLogger.Exception("[BanListMod] Error drawing Recently Left section", ex);
+            GUILayout.Label("(error rendering recently-left list - see log)", SmallLabelStyle());
+        }
     }
 
     private void DrawRecentlyLeftList()
@@ -298,6 +299,9 @@ public class BanListSettingsUi : MonoBehaviour
             GUILayout.Label("Host only.", SmallLabelStyle());
             return;
         }
+
+        if (GUILayout.Button("Clear History", GUILayout.Width(120)))
+            BanManager.ClearRecentlyLeftHistory();
 
         bool any = false;
 

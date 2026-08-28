@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyDescriptionAttribute(("Standalone ban list, denylist, block list, and banned-word moderation for Among U" +
     "s"))]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.1.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.1+d6d528a3e0845565e70c110ed71f2e1e61430cda")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.1+70bc9a99221dff26a4bd8af5015db9a58814b275")]
 [assembly: System.Reflection.AssemblyProductAttribute("BanListMod")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BanListMod")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.1.0")]

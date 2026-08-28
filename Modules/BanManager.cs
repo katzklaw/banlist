@@ -35,9 +35,62 @@ public static class BanManager
         public string FriendCode;
         public string HashedPuid;
         public string PlayerName;
+        public int GamesSinceLeft = 0;
     }
 
     public static readonly Dictionary<int, SeenPlayer> SeenThisSession = new();
+
+    // Auto-drop-off: entries for players who are no longer connected are
+    // removed after this many games have started, so the Recently Left list
+    // doesn't grow indefinitely across a long hosting session. Called once
+    // per game start from ClearSpamCountsOnGameStartPatch (ChatSpamPatch.cs).
+    private const int RecentlyLeftMaxGames = 3;
+
+    public static void AgeAndPruneSeenThisSession()
+    {
+        var toRemove = new List<int>();
+
+        foreach (var kvp in SeenThisSession)
+        {
+            int clientId = kvp.Key;
+            var info = kvp.Value;
+
+            bool stillConnected = AmongUsClient.Instance != null && AmongUsClient.Instance.GetClient(clientId) != null;
+
+            if (stillConnected)
+            {
+                info.GamesSinceLeft = 0; // don't count down while they're still here
+                continue;
+            }
+
+            info.GamesSinceLeft++;
+
+            if (info.GamesSinceLeft >= RecentlyLeftMaxGames)
+                toRemove.Add(clientId);
+        }
+
+        foreach (int id in toRemove)
+            SeenThisSession.Remove(id);
+    }
+
+    // Manual "Clear History" button — only clears entries for players who
+    // have actually left, so currently-connected players' cached info (used
+    // if they disconnect later) isn't lost.
+    public static void ClearRecentlyLeftHistory()
+    {
+        var toRemove = new List<int>();
+
+        foreach (var kvp in SeenThisSession)
+        {
+            bool stillConnected = AmongUsClient.Instance != null && AmongUsClient.Instance.GetClient(kvp.Key) != null;
+
+            if (!stillConnected)
+                toRemove.Add(kvp.Key);
+        }
+
+        foreach (int id in toRemove)
+            SeenThisSession.Remove(id);
+    }
 
     public static void Initialize()
     {
