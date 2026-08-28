@@ -1,6 +1,7 @@
 using HarmonyLib;
 using InnerNet;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -49,45 +50,8 @@ public static class BanListCommandPatch
         {
             case "/ban":
             case "/kick":
-                {
-                    bool asBan = command == "/ban";
-
-                    if (args.Length < 2)
-                    {
-                        Utils.ShowChat($"Usage: {command} <id|name|color> [reason]");
-                        return true;
-                    }
-
-                    PlayerControl target = FindPlayer(args[1]);
-
-                    if (target == null)
-                    {
-                        Utils.ShowChat($"Player '{args[1]}' not found.");
-                        return true;
-                    }
-
-                    ClientData client = AmongUsClient.Instance.GetClient(target.OwnerId);
-
-                    if (client == null)
-                    {
-                        Utils.ShowChat("Client data not found for that player.");
-                        return true;
-                    }
-
-                    if (AllowedManager.IsModCreator(client.FriendCode))
-                        return true;
-
-                    string reason = args.Length >= 3 ? string.Join(" ", args.Skip(2)).Trim() : "No reason provided";
-                    string name = target.Data != null ? target.Data.PlayerName : target.name;
-
-                    if (asBan)
-                        BanManager.AddBanPlayer(client, reason, false);
-
-                    AmongUsClient.Instance.KickPlayer(client.Id, asBan);
-
-                    Utils.SendMessage($"{name} {(asBan ? "banned" : "kicked")}. Reason: {reason}");
-                    return true;
-                }
+                ExecuteKickOrBan(command == "/ban", args);
+                return true;
 
             case "/unban":
                 {
@@ -161,11 +125,7 @@ public static class BanListCommandPatch
 
             case "/id":
                 {
-                    var lines = PlayerControl.AllPlayerControls.ToArray()
-                        .Where(p => p != null && p.Data != null)
-                        .OrderBy(p => p.PlayerId)
-                        .Select(p => $"{p.PlayerId}: {p.Data.PlayerName}")
-                        .ToList();
+                    var lines = GetPlayerIdLines();
 
                     Utils.ShowChat(lines.Count == 0
                         ? "No players connected."
@@ -188,6 +148,95 @@ public static class BanListCommandPatch
             default:
                 return false;
         }
+    }
+
+    // Shared by the host's own /ban and /kick commands, and by
+    // ModeratorCommandInterceptPatch when a registered moderator issues the
+    // same commands from their own client.
+    public static void ExecuteKickOrBan(bool asBan, string[] args)
+    {
+        if (args.Length < 2)
+        {
+            Utils.ShowChat($"Usage: /{(asBan ? "ban" : "kick")} <id|name|color> [reason]");
+            return;
+        }
+
+        PlayerControl target = FindPlayer(args[1]);
+
+        if (target == null)
+        {
+            Utils.ShowChat($"Player '{args[1]}' not found.");
+            return;
+        }
+
+        ClientData client = AmongUsClient.Instance.GetClient(target.OwnerId);
+
+        if (client == null)
+        {
+            Utils.ShowChat("Client data not found for that player.");
+            return;
+        }
+
+        if (AllowedManager.IsModCreator(client.FriendCode))
+            return;
+
+        string reason = args.Length >= 3 ? string.Join(" ", args.Skip(2)).Trim() : "No reason provided";
+        string name = target.Data != null ? target.Data.PlayerName : target.name;
+
+        if (asBan)
+            BanManager.AddBanPlayer(client, reason, false);
+
+        AmongUsClient.Instance.KickPlayer(client.Id, asBan);
+
+        Utils.SendMessage($"{name} {(asBan ? "banned" : "kicked")}. Reason: {reason}");
+    }
+
+    public static List<string> GetPlayerIdLines()
+    {
+        return PlayerControl.AllPlayerControls.ToArray()
+            .Where(p => p != null && p.Data != null)
+            .OrderBy(p => p.PlayerId)
+            .Select(p => $"{p.PlayerId}: {p.Data.PlayerName}")
+            .ToList();
+    }
+
+    // Used when a moderator (not the host) requests /id — ShowChat is
+    // host-only (a local UI bubble), so the reply has to go out as a real
+    // targeted chat message instead. Chat messages cap at 120 characters, so
+    // the list is split across multiple messages rather than risk one long
+    // message getting silently dropped.
+    public static void SendPlayerIdListTo(byte targetPlayerId)
+    {
+        var lines = GetPlayerIdLines();
+
+        if (lines.Count == 0)
+        {
+            Utils.SendMessage("No players connected.", targetPlayerId);
+            return;
+        }
+
+        const int maxLen = 110; // margin under the 120-char cap
+        string current = "";
+
+        foreach (var line in lines)
+        {
+            string next = current.Length == 0 ? line : $"{current} | {line}";
+
+            if (next.Length > maxLen)
+            {
+                if (current.Length > 0)
+                    Utils.SendMessage(current, targetPlayerId);
+
+                current = line;
+            }
+            else
+            {
+                current = next;
+            }
+        }
+
+        if (current.Length > 0)
+            Utils.SendMessage(current, targetPlayerId);
     }
 
     private static PlayerControl FindPlayer(string input)

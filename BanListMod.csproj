@@ -6,7 +6,7 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<Il2CppInteropVerbose>true</Il2CppInteropVerbose>
 		<Optimize>True</Optimize>
-		<VersionPrefix>1.0.0</VersionPrefix>
+		<VersionPrefix>1.0.1</VersionPrefix>
 		<Description>Standalone ban list, denylist, block list, and banned-word moderation for Among Us</Description>
 		<Authors>Katzklaw</Authors>
 		<AssemblyName>BanListMod</AssemblyName>
