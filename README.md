@@ -10,6 +10,9 @@ no extra BS
 
 **Heavily inspired by [GianniBart's Banmod](https://github.com/GiannBart/BanMod).  Thank you Bart!**
 
+
+*version 1.0.2 update: clarifies the error message you as host gets when someone is kicked/banned for using a banned/start word. Also added an option to have a brief post-game summary*
+
 <img width="1222" height="845" alt="image" src="https://github.com/user-attachments/assets/715d200e-8448-4b6d-a430-810da7d7ed5e" />
 
 <img width="482" height="563" alt="image" src="https://github.com/user-attachments/assets/66d51f83-9fed-4a6b-a815-01e4d3f4d43f" />
