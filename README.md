@@ -43,8 +43,6 @@ Uses the same file structure/file names as BanMod and both versions of Among Us 
 
 DenyName list does not ban specific players, but disallows ANYONE with that name. Tired of Trump, Epstein, and Diddy, etc? Never ever want to see another fake Ssundee or Elegance? this is how you keep them out!
 
-<sub>Untested but should work: the moderator system. Add someone to your moderator list, and they *should* be able to also kick/ban people in your stead.</sub>
-
 
 
 **This mod is not affiliated with Among Us or Innersloth LLC, and the content contained therein is not endorsed or otherwise sponsored by Innersloth LLC. Portions of the materials contained herein are property of Innersloth LLC. © Innersloth LLC.**
