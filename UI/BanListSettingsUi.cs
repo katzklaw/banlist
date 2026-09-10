@@ -239,6 +239,10 @@ public class BanListSettingsUi : MonoBehaviour
             SmallLabelStyle());
 
         GUILayout.Space(10);
+        GUILayout.Label("End-Game Summary", HeaderStyle());
+        Options.SendEndGameSummary = GUILayout.Toggle(Options.SendEndGameSummary, " Post impostors/kills and task completion after each game");
+
+        GUILayout.Space(10);
         GUILayout.Label("Menu Hotkey", HeaderStyle());
         GUILayout.Label($"Current: {ToggleKey}", SmallLabelStyle());
         GUILayout.BeginHorizontal();

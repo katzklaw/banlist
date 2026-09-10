@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "FN+gjmT58r0=",
+  "dgSpecHash": "QTED8WWwavE=",
   "success": true,
-  "projectFilePath": "c:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\BanListMod.csproj",
+  "projectFilePath": "C:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\BanListMod.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Admin\\.nuget\\packages\\amongus.gamelibs.steam\\2026.6.5\\amongus.gamelibs.steam.2026.6.5.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\asmresolver\\6.0.0-beta.1\\asmresolver.6.0.0-beta.1.nupkg.sha512",

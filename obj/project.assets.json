@@ -4591,13 +4591,13 @@
     "C:\\Users\\Admin\\.nuget\\packages\\": {}
   },
   "project": {
-    "version": "1.0.1",
+    "version": "1.0.2",
     "restore": {
-      "projectUniqueName": "c:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\BanListMod.csproj",
+      "projectUniqueName": "C:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\BanListMod.csproj",
       "projectName": "BanListMod",
-      "projectPath": "c:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\BanListMod.csproj",
+      "projectPath": "C:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\BanListMod.csproj",
       "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-      "outputPath": "c:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\obj\\",
+      "outputPath": "C:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config"

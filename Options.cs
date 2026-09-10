@@ -47,6 +47,10 @@ public static class Options
     // Parsed/validated in BanListSettingsUi; falls back to Delete if invalid.
     public static string ToggleMenuKey = "Delete";
 
+    // Posts a chat line after each game with impostor names/kills and
+    // overall task completion, e.g. "Bob (2)/Arty (4) | 37/40 tasks".
+    public static bool SendEndGameSummary = true;
+
     public static void Load()
     {
         try
@@ -91,6 +95,7 @@ public static class Options
             ToggleMenuKey = GetS(nameof(ToggleMenuKey), ToggleMenuKey);
             SendWelcomeMessage = GetB(nameof(SendWelcomeMessage), SendWelcomeMessage);
             WelcomeMessage = GetS(nameof(WelcomeMessage), WelcomeMessage);
+            SendEndGameSummary = GetB(nameof(SendEndGameSummary), SendEndGameSummary);
         }
         catch (Exception ex)
         {
@@ -126,6 +131,7 @@ public static class Options
                 $"{nameof(ToggleMenuKey)}={ToggleMenuKey}",
                 $"{nameof(SendWelcomeMessage)}={SendWelcomeMessage}",
                 $"{nameof(WelcomeMessage)}={WelcomeMessage}",
+                $"{nameof(SendEndGameSummary)}={SendEndGameSummary}",
             };
 
             File.WriteAllLines(ConfigPath, lines);

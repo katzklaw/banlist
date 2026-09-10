@@ -143,16 +143,18 @@ public static class SpamManager
         SayStartTimes.TryAdd(clientId, 0);
         SayStartTimes[clientId]++;
 
-        Utils.ShowChat(playername + " said a disallowed start phrase.");
+        if (SayStartTimes[clientId] > Options.AutoKickStartTimes)
+        {
+            Utils.ShowChat($"{playername} said a disallowed start phrase: \"{text}\" - removed (limit reached).");
+            kick = true;
+        }
+        else
+        {
+            Utils.ShowChat($"{playername} said a disallowed start phrase: \"{text}\" (warning {SayStartTimes[clientId]}/{Options.AutoKickStartTimes})");
+        }
 
         if (Options.SendAutoKickStartMsg)
             Utils.SendMessage($"{playername}: warning ({SayStartTimes[clientId]}/{Options.AutoKickStartTimes})", player.PlayerId);
-
-        if (SayStartTimes[clientId] > Options.AutoKickStartTimes)
-        {
-            Utils.ShowChat(playername + " will be removed (start phrase limit reached).");
-            kick = true;
-        }
 
         if (kick)
         {
@@ -190,16 +192,18 @@ public static class SpamManager
         SayBanwordsTimes.TryAdd(clientId, 0);
         SayBanwordsTimes[clientId]++;
 
-        Utils.ShowChat(playername + " said a banned word.");
+        if (SayBanwordsTimes[clientId] > Options.AutoKickStopWordsTimes)
+        {
+            Utils.ShowChat($"{playername} said a banned word: \"{text}\" - removed (limit reached).");
+            kick = true;
+        }
+        else
+        {
+            Utils.ShowChat($"{playername} said a banned word: \"{text}\" (warning {SayBanwordsTimes[clientId]}/{Options.AutoKickStopWordsTimes})");
+        }
 
         if (Options.SendAutoKickStopWordsMsg)
             Utils.SendMessage($"{playername}: warning ({SayBanwordsTimes[clientId]}/{Options.AutoKickStopWordsTimes})", player.PlayerId);
-
-        if (SayBanwordsTimes[clientId] > Options.AutoKickStopWordsTimes)
-        {
-            Utils.ShowChat(playername + " will be removed (banned word limit reached).");
-            kick = true;
-        }
 
         if (kick)
         {

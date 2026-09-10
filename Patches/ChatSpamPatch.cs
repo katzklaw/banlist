@@ -40,7 +40,7 @@ public static class ChatSpamInterceptPatch
 
 // Clear violation counts at the start of each new game so warnings don't
 // carry over from a previous match. Also ages/prunes the Recently Left
-// cache so it doesn't grow indefinitely across a long hosting session.
+// cache, and resets kill tracking / the end-game summary guard.
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Begin))]
 public static class ClearSpamCountsOnGameStartPatch
 {
@@ -49,5 +49,7 @@ public static class ClearSpamCountsOnGameStartPatch
         SpamManager.SayStartTimes.Clear();
         SpamManager.SayBanwordsTimes.Clear();
         BanManager.AgeAndPruneSeenThisSession();
+        TrackKillsPatch.KillCounts.Clear();
+        EndGameSummaryPatch.ResetForNewGame();
     }
 }
