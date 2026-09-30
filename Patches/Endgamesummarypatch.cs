@@ -28,10 +28,10 @@ public static class TrackKillsPatch
     }
 }
 
-// Continuously snapshots each player's role and task completion WHILE the
-// game is still active. This exists because reading GameData.Instance
-// retroactively once the results screen appears returned nothing — the
-// live player roster data appears to already be torn down/reset by then.
+// Continuously snapshots each player's role WHILE the game is still active.
+// This exists because reading GameData.Instance retroactively once the
+// results screen appears returned nothing — the live player roster data
+// appears to already be torn down/reset by then.
 // By the time the game actually ends, this dictionary holds the last good
 // values captured while everything was still valid, the same principle
 // that already makes kill tracking reliable (captured live via
@@ -43,8 +43,6 @@ public static class SnapshotPlayerDataPatch
     {
         public string PlayerName;
         public bool IsImpostor;
-        public int TasksComplete;
-        public int TasksTotal;
     }
 
     public static readonly Dictionary<byte, PlayerSnapshot> LastKnown = new();
@@ -62,24 +60,10 @@ public static class SnapshotPlayerDataPatch
             {
                 if (info == null) continue;
 
-                int tasksComplete = 0;
-                int tasksTotal = 0;
-
-                if (info.Tasks != null)
-                {
-                    foreach (var task in info.Tasks)
-                    {
-                        tasksTotal++;
-                        if (task.Complete) tasksComplete++;
-                    }
-                }
-
                 LastKnown[info.PlayerId] = new PlayerSnapshot
                 {
                     PlayerName = info.PlayerName,
-                    IsImpostor = info.Role != null && info.Role.IsImpostor,
-                    TasksComplete = tasksComplete,
-                    TasksTotal = tasksTotal
+                    IsImpostor = info.Role != null && info.Role.IsImpostor
                 };
             }
         }
@@ -96,11 +80,13 @@ public static class SnapshotPlayerDataPatch
 }
 
 // Posts a single chat line after each game listing the impostor(s) and
-// their kill counts, plus overall task completion — e.g.
-// "Bob (2)/Arty (4) | 37/40 tasks". Reads from the live snapshot above
-// instead of GameData directly. Guarded so it only sends once per game even
-// if the underlying hook fires more than once (common on results screens
-// that redraw across several frames).
+// their kill counts — e.g. "Impostors: Bob (2)/Arty (4)". Task completion
+// is deliberately NOT included: Among Us censors chat messages containing
+// more than 6 digits (so everyone but the host saw a blanked line), and
+// task totals were also skewed by players who disconnected. Reads from the
+// live snapshot above instead of GameData directly. Guarded so it only sends
+// once per game even if the underlying hook fires more than once (common on
+// results screens that redraw across several frames).
 //
 // RISK NOTE: EndGameManager.SetEverythingUp and HudManager.Update are both
 // long-standing patterns across Among Us modding (HudManager.Update is
@@ -125,8 +111,6 @@ public static class EndGameSummaryPatch
             if (snapshot.Count == 0) return; // nothing captured - don't send a misleading empty message
 
             var impostorParts = new List<string>();
-            int totalTasks = 0;
-            int completedTasks = 0;
 
             foreach (var kvp in snapshot)
             {
@@ -138,15 +122,13 @@ public static class EndGameSummaryPatch
                     int kills = TrackKillsPatch.KillCounts.TryGetValue(playerId, out int k) ? k : 0;
                     impostorParts.Add($"{info.PlayerName} ({kills})");
                 }
-
-                totalTasks += info.TasksTotal;
-                completedTasks += info.TasksComplete;
             }
 
-            string impostorSummary = impostorParts.Count > 0 ? string.Join("/", impostorParts) : "None";
-            string message = $"{impostorSummary} | {completedTasks}/{totalTasks} tasks";
+            // No impostor flagged in the snapshot means the capture failed —
+            // better to say nothing than to post a wrong "Impostors: None".
+            if (impostorParts.Count == 0) return;
 
-            Utils.SendMessage(message);
+            Utils.SendMessage($"Impostors: {string.Join("/", impostorParts)}");
             _summarySentThisGame = true;
         }
         catch (Exception ex)

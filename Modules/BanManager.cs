@@ -229,9 +229,18 @@ public static class BanManager
             if (pInfo == null)
                 yield break;
 
-            if (pInfo.PlayerLevel == 0)
+                        // Level data can arrive late while a player is still loading in.
+            // Keep checking until it shows up, or give up after maxWait seconds.
+            float waited = 0f;
+            const float maxWait = 6f;
+
+            while (pInfo.PlayerLevel == 0 && waited < maxWait)
             {
-                yield return new WaitForSeconds(3f);
+                yield return new WaitForSeconds(0.5f);
+                waited += 0.5f;
+
+                if (AmongUsClient.Instance == null || !AmongUsClient.Instance.AmHost)
+                    yield break;
 
                 if (GameData.Instance == null)
                     yield break;

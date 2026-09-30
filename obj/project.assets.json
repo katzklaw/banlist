@@ -2,7 +2,7 @@
   "version": 3,
   "targets": {
     "net6.0": {
-      "AmongUs.GameLibs.Steam/2026.6.5": {
+      "AmongUs.GameLibs.Steam/2026.9.29": {
         "type": "package",
         "build": {
           "build/AmongUs.GameLibs.Steam.props": {}
@@ -1357,13 +1357,13 @@
     }
   },
   "libraries": {
-    "AmongUs.GameLibs.Steam/2026.6.5": {
-      "sha512": "c7rl48iCPUnKY19p+KeZNYsln30kiHkbemKHJCa2dtQ4nc+4b/6eHErOY3EGkZXUGkh/LBiQ/r3FUpdI0q1uAA==",
+    "AmongUs.GameLibs.Steam/2026.9.29": {
+      "sha512": "LhZAevu5OV03KpFLjqXRb9RP2rrWbm8xemdIyNFQVPOVwV0etInH2BZFpDBBIrSnqGzCWa7qOHBhIaVDIfk/jA==",
       "type": "package",
-      "path": "amongus.gamelibs.steam/2026.6.5",
+      "path": "amongus.gamelibs.steam/2026.9.29",
       "files": [
         ".nupkg.metadata",
-        "amongus.gamelibs.steam.2026.6.5.nupkg.sha512",
+        "amongus.gamelibs.steam.2026.9.29.nupkg.sha512",
         "amongus.gamelibs.steam.nuspec",
         "build/AddressablesPlayAssetDelivery.dll",
         "build/AmongUs.GameLibs.Steam.props",
@@ -1388,6 +1388,7 @@
         "build/Sentry.System.Text.Encodings.Web.dll",
         "build/Sentry.System.Text.Json.dll",
         "build/Sentry.System.Threading.Tasks.Extensions.dll",
+        "build/Sentry.Unity.Native.dll",
         "build/Sentry.Unity.dll",
         "build/Sentry.dll",
         "build/System.Configuration.dll",
@@ -4582,7 +4583,7 @@
   },
   "projectFileDependencyGroups": {
     "net6.0": [
-      "AmongUs.GameLibs.Steam >= 2026.6.5",
+      "AmongUs.GameLibs.Steam >= 2026.9.29",
       "BepInEx.IL2CPP.MSBuild >= 2.1.0-rc.1",
       "BepInEx.Unity.IL2CPP >= 6.0.0-be.735"
     ]
@@ -4591,21 +4592,23 @@
     "C:\\Users\\Admin\\.nuget\\packages\\": {}
   },
   "project": {
-    "version": "1.0.2",
+    "version": "2.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\BanListMod.csproj",
+      "projectUniqueName": "c:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\BanListMod.csproj",
       "projectName": "BanListMod",
-      "projectPath": "C:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\BanListMod.csproj",
+      "projectPath": "c:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\BanListMod.csproj",
       "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\obj\\",
+      "outputPath": "c:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
+        "c:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\NuGet.Config",
         "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net6.0"
       ],
       "sources": {
+        "C:\\nuget-local": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -4631,8 +4634,9 @@
         "targetAlias": "net6.0",
         "dependencies": {
           "AmongUs.GameLibs.Steam": {
+            "suppressParent": "All",
             "target": "Package",
-            "version": "[2026.6.5, )"
+            "version": "[2026.9.29, )"
           },
           "BepInEx.IL2CPP.MSBuild": {
             "include": "Compile, Build, Native, ContentFiles, Analyzers, BuildTransitive",

@@ -13,55 +13,56 @@ namespace BanListMod;
 // client, exactly like ChatSpamInterceptPatch already does for word
 // filtering. The moderator's own client needs no special handling at all —
 // they just type the command as completely normal chat text.
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.HandleRpc))]
-public static class ModeratorCommandInterceptPatch
-{
-    private static readonly string[] ModeratorCommands = { "/kick", "/ban", "/id" };
 
-    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] int callId, [HarmonyArgument(1)] MessageReader reader)
-    {
-        try
-        {
-            if (!AmongUsClient.Instance.AmHost) return true;
-            if (callId != (int)RpcCalls.SendChat) return true;
-            if (__instance == null || __instance == PlayerControl.LocalPlayer) return true;
+//[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.HandleRpc))]
+//public static class ModeratorCommandInterceptPatch
+//{
+//    private static readonly string[] ModeratorCommands = { "/kick", "/ban", "/id" };
 
-            MessageReader peekReader = MessageReader.Get(reader);
-            string text;
-            try
-            {
-                text = peekReader.ReadString();
-            }
-            finally
-            {
-                peekReader.Recycle();
-            }
+//    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
+ //   {
+//        try
+ //       {
+//            if (!AmongUsClient.Instance.AmHost) return true;
+ //           if (callId != (byte)RpcCalls.SendChat) return true;
+//            if (__instance == null || __instance == PlayerControl.LocalPlayer) return true;
 
-            if (string.IsNullOrWhiteSpace(text) || !text.StartsWith("/"))
-                return true;
+//            MessageReader peekReader = MessageReader.Get(reader);
+//            string text;
+//            try
+//            {
+//                text = peekReader.ReadString();
+//            }
+//            finally
+//            {
+//                peekReader.Recycle();
+//            }
 
-            string[] args = text.Trim().Split(' ');
-            string command = args[0].ToLowerInvariant();
+//            if (string.IsNullOrWhiteSpace(text) || !text.StartsWith("/"))
+//                return true;
 
-            if (!ModeratorCommands.Contains(command))
-                return true;
+//            string[] args = text.Trim().Split(' ');
+//            string command = args[0].ToLowerInvariant();
 
-            if (!AllowedManager.IsModerator(__instance.FriendCode))
-                return true;
+//            if (!ModeratorCommands.Contains(command))
+//                return true;
+
+ //           if (!AllowedManager.IsModerator(__instance.FriendCode))
+  //              return true;
 
             // Deliberately not suppressing the original message — it stays
             // visible in chat for everyone (by design: seeing a moderator
             // actually kick/ban someone in real time reinforces the rules).
-            if (command == "/id")
-                BanListCommandPatch.SendPlayerIdListTo(__instance.PlayerId);
-            else
-                BanListCommandPatch.ExecuteKickOrBan(command == "/ban", args);
-        }
-        catch (Exception ex)
-        {
-            BMLogger.Exception("[BanListMod] ModeratorCommandInterceptPatch failed", ex);
-        }
+//            if (command == "/id")
+//                BanListCommandPatch.SendPlayerIdListTo(__instance.PlayerId);
+//            else
+//                BanListCommandPatch.ExecuteKickOrBan(command == "/ban", args);
+ //       }
+//        catch (Exception ex)
+ //       {
+//            BMLogger.Exception("[BanListMod] ModeratorCommandInterceptPatch failed", ex);
+ //       }
 
-        return true;
-    }
-}
+  //      return true;
+//    }
+// }

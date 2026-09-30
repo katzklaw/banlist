@@ -1,31 +1,48 @@
 using HarmonyLib;
 using InnerNet;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 
 namespace BanListMod;
 
-[HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerJoined))]
-public static class OnPlayerJoinedPatch
+[HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.Update))]
+public static class JoinWatcherPatch
 {
-    public static void Postfix([HarmonyArgument(0)] ClientData client)
+    private static readonly HashSet<int> seen = new();
+
+    public static void Postfix()
     {
-        if (client == null)
-            return;
-
-        if (AmongUsClient.Instance == null || !AmongUsClient.Instance.AmHost)
-            return;
-
-        // Cache basic info now so this player can still be banned later via
-        // the "Recently Left" list even after they disconnect.
-        BanManager.SeenThisSession[client.Id] = new BanManager.SeenPlayer
+        try
         {
-            FriendCode = client.FriendCode,
-            HashedPuid = client.GetHashedPuid(),
-            PlayerName = client.PlayerName
-        };
+            var client = AmongUsClient.Instance;
+            if (client == null || !client.AmHost) { seen.Clear(); return; }
 
+            var live = new HashSet<int>();
+            var newcomers = new List<ClientData>();
+
+            foreach (var c in client.allClients)
+            {
+                if (c == null) continue;
+                live.Add(c.Id);
+                if (seen.Add(c.Id) && c.Id != client.ClientId)
+                    newcomers.Add(c);
+            }
+
+            seen.RemoveWhere(id => !live.Contains(id));
+
+            foreach (var c in newcomers)
+                OnClientJoined(c);
+        }
+        catch (Exception ex)
+        {
+            BMLogger.Exception("[BanListMod] JoinWatcherPatch failed", ex);
+        }
+    }
+
+    private static void OnClientJoined(ClientData client)
+    {
         if (Options.CheckBlockList &&
             DestroyableSingleton<FriendsListManager>.Instance != null &&
             DestroyableSingleton<FriendsListManager>.Instance.IsPlayerBlockedUsername(client.FriendCode))
@@ -37,7 +54,6 @@ public static class OnPlayerJoinedPatch
         }
 
         BanManager.CheckBanPlayer(client);
-
         AmongUsClient.Instance.StartCoroutine(BanManager.WaitAndCheckAll(client).WrapToIl2Cpp());
     }
 }

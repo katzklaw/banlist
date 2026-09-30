@@ -11,31 +11,30 @@ namespace BanListMod;
 public static class BanListCommandPatch
 {
     private static readonly string[] KnownCommands =
-    {
-        "/ban", "/kick", "/unban", "/addfriend", "/deletefriend",
-        "/addmod", "/deletemod", "/dn", "/ddn", "/id", "/banlisthelp"
-    };
+{
+    "/ban", "/kick", "/unban", "/addfriend", "/deletefriend",
+    "/addmod", "/deletemod", "/dn", "/ddn", "/id", "/banlisthelp"
+};
 
-    public static bool Prefix(ChatController __instance)
+      public static bool Prefix(ChatController __instance)
     {
+        BMLogger.LogInfo("SENDCHAT HOOK RAN");
+
         try
         {
             string text = __instance.freeChatField.textArea.text;
+            BMLogger.LogInfo("SENDCHAT TEXT: " + text);
 
-            if (string.IsNullOrWhiteSpace(text) || !text.StartsWith("/"))
-                return true;
-
-            if (!AmongUsClient.Instance.AmHost)
-                return true;
+            if (string.IsNullOrWhiteSpace(text) || !text.StartsWith("/")) return true;
+            if (AmongUsClient.Instance == null || !AmongUsClient.Instance.AmHost) return true;
 
             string[] args = text.Split(' ');
             string command = args[0].ToLowerInvariant();
 
-            if (!KnownCommands.Contains(command))
-                return true;
+            if (!KnownCommands.Contains(command)) return true;
 
             bool handled = HandleCommand(command, args);
-            return !handled; // suppress sending the command text itself as chat
+            return !handled;
         }
         catch (Exception ex)
         {

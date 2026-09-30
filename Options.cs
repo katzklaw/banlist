@@ -47,8 +47,8 @@ public static class Options
     // Parsed/validated in BanListSettingsUi; falls back to Delete if invalid.
     public static string ToggleMenuKey = "Delete";
 
-    // Posts a chat line after each game with impostor names/kills and
-    // overall task completion, e.g. "Bob (2)/Arty (4) | 37/40 tasks".
+    // Posts a chat line after each game with impostor names and their kill
+    // counts, e.g. "Impostors: Bob (2)/Arty (4)".
     public static bool SendEndGameSummary = true;
 
     public static void Load()
