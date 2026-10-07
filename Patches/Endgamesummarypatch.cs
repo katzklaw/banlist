@@ -12,11 +12,18 @@ public static class TrackKillsPatch
 {
     public static readonly Dictionary<byte, int> KillCounts = new();
 
-    public static void Postfix(PlayerControl __instance)
+    [HarmonyPrefix]
+    public static void Prefix(
+        PlayerControl __instance,
+        [HarmonyArgument(0)] PlayerControl target,
+        [HarmonyArgument(1)] MurderResultFlags resultFlags)
     {
         try
         {
             if (__instance == null) return;
+
+            // Only count kills that actually succeeded (not blocked by a shield).
+            if (!resultFlags.HasFlag(MurderResultFlags.Succeeded)) return;
 
             KillCounts.TryAdd(__instance.PlayerId, 0);
             KillCounts[__instance.PlayerId]++;
