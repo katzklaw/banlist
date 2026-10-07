@@ -1,5 +1,4 @@
 <div align="center">
-currently broken with the latest update. i am working on a fix asap
 
 # BanList
 
