@@ -331,6 +331,12 @@ public class BanListSettingsUi : MonoBehaviour
                 if (GUILayout.Button("Ban", GUILayout.Width(60)))
                     BanManager.AddBanPlayerByInfo(info.FriendCode, info.HashedPuid, info.PlayerName, "Left Game");
                 GUI.enabled = true;
+
+                bool alreadyFriend = AllowedManager.IsFriend(info.FriendCode);
+                GUI.enabled = !alreadyFriend;
+                if (GUILayout.Button(alreadyFriend ? "Friend ✓" : "Add Friend", GUILayout.Width(90)))
+                    DoAddFriend(info.FriendCode, info.PlayerName);
+                GUI.enabled = true;
             }
             finally
             {
@@ -379,6 +385,12 @@ public class BanListSettingsUi : MonoBehaviour
                 if (GUILayout.Button("Ban", GUILayout.Width(60)))
                     DoBan(client, player.Data.PlayerName);
                 GUI.enabled = true;
+
+                bool alreadyFriend = AllowedManager.IsFriend(client.FriendCode);
+                GUI.enabled = !alreadyFriend;
+                if (GUILayout.Button(alreadyFriend ? "Friend ✓" : "Add Friend", GUILayout.Width(90)))
+                    DoAddFriend(client.FriendCode, player.Data.PlayerName);
+                GUI.enabled = true;
             }
             finally
             {
@@ -394,6 +406,17 @@ public class BanListSettingsUi : MonoBehaviour
     {
         AmongUsClient.Instance.KickPlayer(client.Id, false);
         Utils.SendMessage($"{name} kicked. Reason: Moderator UI");
+    }
+
+    private void DoAddFriend(string friendCode, string name)
+    {
+        if (string.IsNullOrEmpty(friendCode))
+        {
+            Utils.SendMessage($"{name} has no friend code, can't add.");
+            return;
+        }
+        AllowedManager.AddRole(friendCode, name, AllowedRole.Friend);
+        Utils.SendMessage($"{name} added to Friend list.");
     }
 
     private void DoBan(ClientData client, string name)

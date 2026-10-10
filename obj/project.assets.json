@@ -4592,16 +4592,16 @@
     "C:\\Users\\Admin\\.nuget\\packages\\": {}
   },
   "project": {
-    "version": "2.0.1",
+    "version": "2.0.2",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\BanListMod.csproj",
+      "projectUniqueName": "c:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\BanListMod.csproj",
       "projectName": "BanListMod",
-      "projectPath": "C:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\BanListMod.csproj",
+      "projectPath": "c:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\BanListMod.csproj",
       "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\obj\\",
+      "outputPath": "c:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\NuGet.Config",
+        "c:\\Users\\Admin\\Desktop\\im makin mods LOL\\banlist\\NuGet.Config",
         "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [

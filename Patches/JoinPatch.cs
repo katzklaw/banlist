@@ -28,6 +28,11 @@ public static class JoinWatcherPatch
                 live.Add(c.Id);
                 if (seen.Add(c.Id) && c.Id != client.ClientId)
                     newcomers.Add(c);
+
+                // Keep the Recently Left cache up to date while they're here.
+                // (name / friend code can arrive slightly after the join)
+                if (c.Id != client.ClientId)
+                    RecordSeen(c);
             }
 
             seen.RemoveWhere(id => !live.Contains(id));
@@ -38,6 +43,28 @@ public static class JoinWatcherPatch
         catch (Exception ex)
         {
             BMLogger.Exception("[BanListMod] JoinWatcherPatch failed", ex);
+        }
+    }
+
+    private static void RecordSeen(ClientData c)
+    {
+        try
+        {
+            if (!BanManager.SeenThisSession.TryGetValue(c.Id, out var info))
+            {
+                info = new BanManager.SeenPlayer();
+                BanManager.SeenThisSession[c.Id] = info;
+            }
+
+            if (!string.IsNullOrEmpty(c.PlayerName)) info.PlayerName = c.PlayerName;
+            if (!string.IsNullOrEmpty(c.FriendCode)) info.FriendCode = c.FriendCode;
+
+            if (string.IsNullOrEmpty(info.HashedPuid) && !string.IsNullOrEmpty(c.ProductUserId))
+                info.HashedPuid = c.GetHashedPuid();
+        }
+        catch (Exception ex)
+        {
+            BMLogger.Exception("[BanListMod] RecordSeen failed", ex);
         }
     }
 
