@@ -35,6 +35,7 @@ public static class Options
 
     public static bool CultureInvariant = true;
     public static bool ExcludeFriends = true;
+    public static bool DisableLobbyMusic = false;
 
     // Auto-sent to a player individually once they've joined and spawned.
     // Text is editable directly in the config file (not via the in-menu UI,
@@ -92,6 +93,7 @@ public static class Options
             SendAutoKickStartMsg = GetB(nameof(SendAutoKickStartMsg), SendAutoKickStartMsg);
             CultureInvariant = GetB(nameof(CultureInvariant), CultureInvariant);
             ExcludeFriends = GetB(nameof(ExcludeFriends), ExcludeFriends);
+            DisableLobbyMusic = GetB(nameof(DisableLobbyMusic), DisableLobbyMusic);
             ToggleMenuKey = GetS(nameof(ToggleMenuKey), ToggleMenuKey);
             SendWelcomeMessage = GetB(nameof(SendWelcomeMessage), SendWelcomeMessage);
             WelcomeMessage = GetS(nameof(WelcomeMessage), WelcomeMessage);
@@ -128,6 +130,7 @@ public static class Options
                 $"{nameof(SendAutoKickStartMsg)}={SendAutoKickStartMsg}",
                 $"{nameof(CultureInvariant)}={CultureInvariant}",
                 $"{nameof(ExcludeFriends)}={ExcludeFriends}",
+                $"{nameof(DisableLobbyMusic)}={DisableLobbyMusic}",
                 $"{nameof(ToggleMenuKey)}={ToggleMenuKey}",
                 $"{nameof(SendWelcomeMessage)}={SendWelcomeMessage}",
                 $"{nameof(WelcomeMessage)}={WelcomeMessage}",

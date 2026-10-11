@@ -232,6 +232,13 @@ public class BanListSettingsUi : MonoBehaviour
         Options.ExcludeFriends = GUILayout.Toggle(Options.ExcludeFriends, " Friends and moderators are immune to word filters");
 
         GUILayout.Space(10);
+        GUILayout.Label("Audio", HeaderStyle());
+        bool prevMusic = Options.DisableLobbyMusic;
+        Options.DisableLobbyMusic = GUILayout.Toggle(Options.DisableLobbyMusic, " Mute lobby music only");
+        if (prevMusic != Options.DisableLobbyMusic)
+            LobbyMusic.Apply();
+        
+        GUILayout.Space(10);
         GUILayout.Label("Join Message", HeaderStyle());
         Options.SendWelcomeMessage = GUILayout.Toggle(Options.SendWelcomeMessage, " Send a message to players when they join");
         GUILayout.Label(
