@@ -43,6 +43,13 @@ public class BanListSettingsUi : MonoBehaviour
     {
         if (!showMenu) return;
 
+        if (_pendingToggle != null && Event.current.type == EventType.Layout)
+        {
+            _open.TryGetValue(_pendingToggle, out bool wasOpen);
+            _open[_pendingToggle] = !wasOpen;
+            _pendingToggle = null;
+        }
+
         try
         {
             windowRect = GUI.Window(windowId, windowRect, (GUI.WindowFunction)DrawWindow, "BanListMod Settings");
@@ -112,195 +119,269 @@ public class BanListSettingsUi : MonoBehaviour
 
     private void DrawWindowContent()
     {
-        GUILayout.Label("Players", HeaderStyle());
-        try
-        {
-            DrawPlayerList();
-        }
-        catch (Exception ex)
-        {
-            BMLogger.Exception("[BanListMod] Error drawing Players section", ex);
-            GUILayout.Label("(error rendering player list - see log)", SmallLabelStyle());
-        }
-
-        GUILayout.Space(10);
-        GUILayout.Label("Ban List / Deny List", HeaderStyle());
-        Options.CheckBanList = GUILayout.Toggle(Options.CheckBanList, " Enforce ban list on join");
-        Options.CheckBlockList = GUILayout.Toggle(Options.CheckBlockList, " Auto-ban players on your platform block list");
-        Options.CheckFriendCode = GUILayout.Toggle(Options.CheckFriendCode, " Kick players with malformed friend codes");
-        Options.AddBanToList = GUILayout.Toggle(Options.AddBanToList, " Save bans to the ban list file");
-
-        GUILayout.Space(10);
-        GUILayout.Label("Minimum Level", HeaderStyle());
-        Options.KickLevel = GUILayout.Toggle(Options.KickLevel, " Require a minimum account level");
-        if (Options.KickLevel)
+        if (Section("Players"))
         {
             try
             {
-                GUILayout.BeginHorizontal();
-                try
-                {
-                    GUILayout.Label("Minimum level:", GUILayout.Width(140));
-                    if (GUILayout.Button("-", GUILayout.Width(28)))
-                        Options.KickLevelLevel = Math.Max(0, Options.KickLevelLevel - 1);
-                    GUILayout.Label(Options.KickLevelLevel.ToString(), GUILayout.Width(36));
-                    if (GUILayout.Button("+", GUILayout.Width(28)))
-                        Options.KickLevelLevel = Math.Min(999, Options.KickLevelLevel + 1);
-                }
-                finally
-                {
-                    GUILayout.EndHorizontal();
-                }
-
-                DrawActionToggle("Action:", ref Options.KickLevelAction);
+                DrawPlayerList();
             }
             catch (Exception ex)
             {
-                BMLogger.Exception("[BanListMod] Error drawing Minimum Level section", ex);
-                GUILayout.Label("(error rendering this section - see log)", SmallLabelStyle());
+                BMLogger.Exception("[BanListMod] Error drawing Players section", ex);
+                GUILayout.Label("(error rendering player list - see log)", SmallLabelStyle());
             }
         }
+        GUILayout.Space(4);
 
-        GUILayout.Space(10);
-        GUILayout.Label("Banned Words", HeaderStyle());
-        Options.AutoKickStopWords = GUILayout.Toggle(Options.AutoKickStopWords, " Enforce banned-word list (any time)");
-        if (Options.AutoKickStopWords)
+        if (Section("Filters"))
         {
-            try
+            GUILayout.Label("Ban List / Deny List", HeaderStyle());
+            Options.CheckBanList = GUILayout.Toggle(Options.CheckBanList, " Enforce ban list on join");
+            Options.CheckBlockList = GUILayout.Toggle(Options.CheckBlockList, " Auto-ban players on your platform block list");
+            Options.CheckFriendCode = GUILayout.Toggle(Options.CheckFriendCode, " Kick players with malformed friend codes");
+            Options.AddBanToList = GUILayout.Toggle(Options.AddBanToList, " Save bans to the ban list file");
+            GUILayout.Space(8);
+            GUILayout.Label("Minimum Level", HeaderStyle());
+            Options.KickLevel = GUILayout.Toggle(Options.KickLevel, " Require a minimum account level");
+            if (Options.KickLevel)
             {
-                DrawActionToggle("Action:", ref Options.AutoKickStopWordsAction);
-
-                GUILayout.BeginHorizontal();
                 try
                 {
-                    GUILayout.Label("Warnings before action:", GUILayout.Width(160));
-                    if (GUILayout.Button("-", GUILayout.Width(28)))
-                        Options.AutoKickStopWordsTimes = Math.Max(0, Options.AutoKickStopWordsTimes - 1);
-                    GUILayout.Label(Options.AutoKickStopWordsTimes.ToString(), GUILayout.Width(36));
-                    if (GUILayout.Button("+", GUILayout.Width(28)))
-                        Options.AutoKickStopWordsTimes = Math.Min(99, Options.AutoKickStopWordsTimes + 1);
+                    GUILayout.BeginHorizontal();
+                    try
+                    {
+                        GUILayout.Label("Minimum level:", GUILayout.Width(140));
+                        if (GUILayout.Button("-", GUILayout.Width(28)))
+                            Options.KickLevelLevel = Math.Max(0, Options.KickLevelLevel - 1);
+                        GUILayout.Label(Options.KickLevelLevel.ToString(), GUILayout.Width(36));
+                        if (GUILayout.Button("+", GUILayout.Width(28)))
+                            Options.KickLevelLevel = Math.Min(999, Options.KickLevelLevel + 1);
+                    }
+                    finally
+                    {
+                        GUILayout.EndHorizontal();
+                    }
+
+                    DrawActionToggle("Action:", ref Options.KickLevelAction);
                 }
-                finally
+                catch (Exception ex)
                 {
-                    GUILayout.EndHorizontal();
+                    BMLogger.Exception("[BanListMod] Error drawing Minimum Level section", ex);
+                    GUILayout.Label("(error rendering this section - see log)", SmallLabelStyle());
                 }
-
-                Options.SendAutoKickStopWordsMsg = GUILayout.Toggle(Options.SendAutoKickStopWordsMsg, " Announce warnings in chat");
             }
-            catch (Exception ex)
+            GUILayout.Space(8);
+            GUILayout.Label("Banned Words", HeaderStyle());
+            Options.AutoKickStopWords = GUILayout.Toggle(Options.AutoKickStopWords, " Enforce banned-word list (any time)");
+            if (Options.AutoKickStopWords)
             {
-                BMLogger.Exception("[BanListMod] Error drawing Banned Words section", ex);
-                GUILayout.Label("(error rendering this section - see log)", SmallLabelStyle());
-            }
-        }
+                try
+                {
+                    DrawActionToggle("Action:", ref Options.AutoKickStopWordsAction);
 
-        GUILayout.Space(10);
-        GUILayout.Label("Start Phrases", HeaderStyle());
-        Options.AutoKickStart = GUILayout.Toggle(Options.AutoKickStart, " Enforce start-phrase list (lobby only)");
-        if (Options.AutoKickStart)
+                    GUILayout.BeginHorizontal();
+                    try
+                    {
+                        GUILayout.Label("Warnings before action:", GUILayout.Width(160));
+                        if (GUILayout.Button("-", GUILayout.Width(28)))
+                            Options.AutoKickStopWordsTimes = Math.Max(0, Options.AutoKickStopWordsTimes - 1);
+                        GUILayout.Label(Options.AutoKickStopWordsTimes.ToString(), GUILayout.Width(36));
+                        if (GUILayout.Button("+", GUILayout.Width(28)))
+                            Options.AutoKickStopWordsTimes = Math.Min(99, Options.AutoKickStopWordsTimes + 1);
+                    }
+                    finally
+                    {
+                        GUILayout.EndHorizontal();
+                    }
+
+                    Options.SendAutoKickStopWordsMsg = GUILayout.Toggle(Options.SendAutoKickStopWordsMsg, " Announce warnings in chat");
+                }
+                catch (Exception ex)
+                {
+                    BMLogger.Exception("[BanListMod] Error drawing Banned Words section", ex);
+                    GUILayout.Label("(error rendering this section - see log)", SmallLabelStyle());
+                }
+            }
+            GUILayout.Space(8);
+            GUILayout.Label("Start Phrases", HeaderStyle());
+            Options.AutoKickStart = GUILayout.Toggle(Options.AutoKickStart, " Enforce start-phrase list (lobby only)");
+            if (Options.AutoKickStart)
+            {
+                try
+                {
+                    DrawActionToggle("Action:", ref Options.AutoKickStartAction);
+
+                    GUILayout.BeginHorizontal();
+                    try
+                    {
+                        GUILayout.Label("Warnings before action:", GUILayout.Width(160));
+                        if (GUILayout.Button("-", GUILayout.Width(28)))
+                            Options.AutoKickStartTimes = Math.Max(0, Options.AutoKickStartTimes - 1);
+                        GUILayout.Label(Options.AutoKickStartTimes.ToString(), GUILayout.Width(36));
+                        if (GUILayout.Button("+", GUILayout.Width(28)))
+                            Options.AutoKickStartTimes = Math.Min(99, Options.AutoKickStartTimes + 1);
+                    }
+                    finally
+                    {
+                        GUILayout.EndHorizontal();
+                    }
+
+                    Options.SendAutoKickStartMsg = GUILayout.Toggle(Options.SendAutoKickStartMsg, " Announce warnings in chat");
+                }
+                catch (Exception ex)
+                {
+                    BMLogger.Exception("[BanListMod] Error drawing Start Phrases section", ex);
+                    GUILayout.Label("(error rendering this section - see log)", SmallLabelStyle());
+                }
+            }
+            GUILayout.Space(8);
+            GUILayout.Label("Friends", HeaderStyle());
+            Options.ExcludeFriends = GUILayout.Toggle(Options.ExcludeFriends, " Friends and moderators are immune to word filters");
+        }
+        GUILayout.Space(4);
+
+        if (Section("Messages"))
         {
-            try
+            GUILayout.Label("Join Message", HeaderStyle());
+            Options.SendWelcomeMessage = GUILayout.Toggle(Options.SendWelcomeMessage, " Send a message to players when they join");
+            GUILayout.Label(
+                "Edit WelcomeMessage= in BanListMod_config.txt to change the text\n(single line, up to 120 characters).",
+                SmallLabelStyle());
+            GUILayout.Space(8);
+            GUILayout.Label("End-Game Summary", HeaderStyle());
+            Options.SendEndGameSummary = GUILayout.Toggle(Options.SendEndGameSummary, " Post the impostors and their kill counts after each game");
+            GUILayout.Space(8);
+            GUILayout.Label("Preset Messages", HeaderStyle());
+            if (GUILayout.Button("Open Preset Menu (" + PresetMenuUi.ToggleKey + ")", GUILayout.Height(26)))
             {
-                DrawActionToggle("Action:", ref Options.AutoKickStartAction);
-
-                GUILayout.BeginHorizontal();
-                try
-                {
-                    GUILayout.Label("Warnings before action:", GUILayout.Width(160));
-                    if (GUILayout.Button("-", GUILayout.Width(28)))
-                        Options.AutoKickStartTimes = Math.Max(0, Options.AutoKickStartTimes - 1);
-                    GUILayout.Label(Options.AutoKickStartTimes.ToString(), GUILayout.Width(36));
-                    if (GUILayout.Button("+", GUILayout.Width(28)))
-                        Options.AutoKickStartTimes = Math.Min(99, Options.AutoKickStartTimes + 1);
-                }
-                finally
-                {
-                    GUILayout.EndHorizontal();
-                }
-
-                Options.SendAutoKickStartMsg = GUILayout.Toggle(Options.SendAutoKickStartMsg, " Announce warnings in chat");
+                if (PresetMenuUi.Instance != null)
+                    PresetMenuUi.Instance.showMenu = true;
             }
-            catch (Exception ex)
-            {
-                BMLogger.Exception("[BanListMod] Error drawing Start Phrases section", ex);
-                GUILayout.Label("(error rendering this section - see log)", SmallLabelStyle());
-            }
+            GUILayout.Label("Edit BAN_DATA/PRESETS/Presets.txt (UTF-8), then press Reload in the preset window.", SmallLabelStyle());
         }
+        GUILayout.Space(4);
 
-        GUILayout.Space(10);
-        GUILayout.Label("Friends", HeaderStyle());
-        Options.ExcludeFriends = GUILayout.Toggle(Options.ExcludeFriends, " Friends and moderators are immune to word filters");
-
-        GUILayout.Space(10);
-        GUILayout.Label("Audio", HeaderStyle());
-        bool prevMusic = Options.DisableLobbyMusic;
-        Options.DisableLobbyMusic = GUILayout.Toggle(Options.DisableLobbyMusic, " Mute lobby music only");
-        if (prevMusic != Options.DisableLobbyMusic)
-            LobbyMusic.Apply();
+        if (Section("Audio & Hotkeys"))
+        {
+            GUILayout.Label("Audio", HeaderStyle());
+            bool prevMusic = Options.DisableLobbyMusic;
+            Options.DisableLobbyMusic = GUILayout.Toggle(Options.DisableLobbyMusic, " Mute lobby music only");
+            if (prevMusic != Options.DisableLobbyMusic)
+                LobbyMusic.Apply();
         
-        GUILayout.Space(10);
-        GUILayout.Label("Join Message", HeaderStyle());
-        Options.SendWelcomeMessage = GUILayout.Toggle(Options.SendWelcomeMessage, " Send a message to players when they join");
-        GUILayout.Label(
-            "Edit WelcomeMessage= in BanListMod_config.txt to change the text\n(single line, up to 120 characters).",
-            SmallLabelStyle());
+            GUILayout.Space(8);
+            GUILayout.Label("Menu Hotkey", HeaderStyle());
+            GUILayout.Label($"Current: {ToggleKey}", SmallLabelStyle());
+            GUILayout.BeginHorizontal();
+            try
+            {
+                DrawHotkeyButton(KeyCode.Delete);
+                DrawHotkeyButton(KeyCode.Insert);
+                DrawHotkeyButton(KeyCode.Home);
+                DrawHotkeyButton(KeyCode.End);
+            }
+            finally
+            {
+                GUILayout.EndHorizontal();
+            }
+            GUILayout.BeginHorizontal();
+            try
+            {
+                DrawHotkeyButton(KeyCode.F6);
+                DrawHotkeyButton(KeyCode.F7);
+                DrawHotkeyButton(KeyCode.F8);
+                DrawHotkeyButton(KeyCode.F9);
+            }
+            finally
+            {
+                GUILayout.EndHorizontal();
+            }
+            GUILayout.Space(8);
+            GUILayout.Label("Preset Menu Hotkey", HeaderStyle());
+            GUILayout.Label($"Current: {PresetMenuUi.ToggleKey}", SmallLabelStyle());
+            GUILayout.BeginHorizontal();
+            try
+            {
+                DrawPresetHotkeyButton(KeyCode.Insert);
+                DrawPresetHotkeyButton(KeyCode.Home);
+                DrawPresetHotkeyButton(KeyCode.End);
+                DrawPresetHotkeyButton(KeyCode.PageUp);
+            }
+            finally
+            {
+                GUILayout.EndHorizontal();
+            }
+            GUILayout.BeginHorizontal();
+            try
+            {
+                DrawPresetHotkeyButton(KeyCode.F6);
+                DrawPresetHotkeyButton(KeyCode.F7);
+                DrawPresetHotkeyButton(KeyCode.F8);
+                DrawPresetHotkeyButton(KeyCode.F9);
+            }
+            finally
+            {
+                GUILayout.EndHorizontal();
+            }
+        }
+        GUILayout.Space(4);
 
-        GUILayout.Space(10);
-        GUILayout.Label("End-Game Summary", HeaderStyle());
-        Options.SendEndGameSummary = GUILayout.Toggle(Options.SendEndGameSummary, " Post the impostors and their kill counts after each game");
+        if (Section("Commands"))
+        {
+            GUILayout.Label(
+                "/ban /kick <id|name|color> [reason]\n" +
+                "/unban <id|name|color>\n" +
+                "/addfriend /deletefriend <id>\n" +
+                "/addmod /deletemod <id>\n" +
+                "/dn /ddn <name>\n" +
+                "/id\n" +
+                "/banlisthelp",
+                SmallLabelStyle());
+        }
+        GUILayout.Space(4);
 
-        GUILayout.Space(10);
-        GUILayout.Label("Menu Hotkey", HeaderStyle());
-        GUILayout.Label($"Current: {ToggleKey}", SmallLabelStyle());
-        GUILayout.BeginHorizontal();
-        try
+        if (Section("Recently Left"))
         {
-            DrawHotkeyButton(KeyCode.Delete);
-            DrawHotkeyButton(KeyCode.Insert);
-            DrawHotkeyButton(KeyCode.Home);
-            DrawHotkeyButton(KeyCode.End);
+            GUILayout.Label("Entries drop off automatically after 3 games.", SmallLabelStyle());
+            try
+            {
+                DrawRecentlyLeftList();
+            }
+            catch (Exception ex)
+            {
+                BMLogger.Exception("[BanListMod] Error drawing Recently Left section", ex);
+                GUILayout.Label("(error rendering recently-left list - see log)", SmallLabelStyle());
+            }
+    
         }
-        finally
-        {
-            GUILayout.EndHorizontal();
-        }
-        GUILayout.BeginHorizontal();
-        try
-        {
-            DrawHotkeyButton(KeyCode.F6);
-            DrawHotkeyButton(KeyCode.F7);
-            DrawHotkeyButton(KeyCode.F8);
-            DrawHotkeyButton(KeyCode.F9);
-        }
-        finally
-        {
-            GUILayout.EndHorizontal();
-        }
+        GUILayout.Space(4);
+    }
 
-        GUILayout.Space(10);
-        GUILayout.Label("Commands", HeaderStyle());
-        GUILayout.Label(
-            "/ban /kick <id|name|color> [reason]\n" +
-            "/unban <id|name|color>\n" +
-            "/addfriend /deletefriend <id>\n" +
-            "/addmod /deletemod <id>\n" +
-            "/dn /ddn <name>\n" +
-            "/id\n" +
-            "/banlisthelp",
-            SmallLabelStyle());
+    private readonly System.Collections.Generic.Dictionary<string, bool> _open = new()
+    {
+        ["Players"] = true,
+    };
 
-        GUILayout.Space(10);
-        GUILayout.Label("Recently Left", HeaderStyle());
-        GUILayout.Label("Entries drop off automatically after 3 games.", SmallLabelStyle());
-        try
-        {
-            DrawRecentlyLeftList();
-        }
-        catch (Exception ex)
-        {
-            BMLogger.Exception("[BanListMod] Error drawing Recently Left section", ex);
-            GUILayout.Label("(error rendering recently-left list - see log)", SmallLabelStyle());
-        }
+    private string _pendingToggle;
+
+    // Collapsible group header. Returns true when the group is expanded.
+    private bool Section(string title)
+    {
+        _open.TryGetValue(title, out bool open);
+        // The actual flip is deferred to the next Layout event (see OnGUI) so the
+        // control count never changes between Layout and Repaint of one frame.
+        if (GUILayout.Button((open ? "\u25BC  " : "\u25B6  ") + title, SelectedButtonStyle(), GUILayout.Height(28)))
+            _pendingToggle = title;
+        return open;
+    }
+
+    private void DrawPresetHotkeyButton(KeyCode key)
+    {
+        bool isCurrent = PresetMenuUi.ToggleKey == key;
+        var style = isCurrent ? SelectedButtonStyle() : GUI.skin.button;
+
+        if (GUILayout.Button(key.ToString(), style, GUILayout.Width(70)))
+            Options.PresetMenuKey = key.ToString();
     }
 
     private void DrawRecentlyLeftList()

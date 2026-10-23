@@ -24,17 +24,20 @@ public class BanListModPlugin : BasePlugin
         try
         {
             ClassInjector.RegisterTypeInIl2Cpp<BanListSettingsUi>();
+            ClassInjector.RegisterTypeInIl2Cpp<PresetMenuUi>();
 
             Options.Load();
             AllowedManager.Initialize();
             BanManager.Initialize();
             SpamManager.Initialize();
+            PresetManager.Initialize();
 
             Harmony.PatchAll();
 
             AddComponent<BanListSettingsUi>();
+            AddComponent<PresetMenuUi>();
 
-            BMLogger.LogInfo($"BanListMod {PluginVersion} loaded. Press {BanListSettingsUi.ToggleKey} for settings.");
+            BMLogger.LogInfo($"BanListMod {PluginVersion} loaded. Press {BanListSettingsUi.ToggleKey} for settings, {PresetMenuUi.ToggleKey} for preset messages.");
         }
         catch (Exception ex)
         {

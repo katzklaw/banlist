@@ -48,6 +48,9 @@ public static class Options
     // Parsed/validated in BanListSettingsUi; falls back to Delete if invalid.
     public static string ToggleMenuKey = "Delete";
 
+    // Hotkey for the preset-message button window (see PresetManager).
+    public static string PresetMenuKey = "Insert";
+
     // Posts a chat line after each game with impostor names and their kill
     // counts, e.g. "Impostors: Bob (2)/Arty (4)".
     public static bool SendEndGameSummary = true;
@@ -95,6 +98,7 @@ public static class Options
             ExcludeFriends = GetB(nameof(ExcludeFriends), ExcludeFriends);
             DisableLobbyMusic = GetB(nameof(DisableLobbyMusic), DisableLobbyMusic);
             ToggleMenuKey = GetS(nameof(ToggleMenuKey), ToggleMenuKey);
+            PresetMenuKey = GetS(nameof(PresetMenuKey), PresetMenuKey);
             SendWelcomeMessage = GetB(nameof(SendWelcomeMessage), SendWelcomeMessage);
             WelcomeMessage = GetS(nameof(WelcomeMessage), WelcomeMessage);
             SendEndGameSummary = GetB(nameof(SendEndGameSummary), SendEndGameSummary);
@@ -132,6 +136,7 @@ public static class Options
                 $"{nameof(ExcludeFriends)}={ExcludeFriends}",
                 $"{nameof(DisableLobbyMusic)}={DisableLobbyMusic}",
                 $"{nameof(ToggleMenuKey)}={ToggleMenuKey}",
+                $"{nameof(PresetMenuKey)}={PresetMenuKey}",
                 $"{nameof(SendWelcomeMessage)}={SendWelcomeMessage}",
                 $"{nameof(WelcomeMessage)}={WelcomeMessage}",
                 $"{nameof(SendEndGameSummary)}={SendEndGameSummary}",
