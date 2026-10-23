@@ -592,6 +592,10 @@ public static class InnerNetClientKickPlayerAutoBanPatch
             if (AmongUsClient.Instance == null || !AmongUsClient.Instance.AmHost)
                 return;
 
+            // Never ban-list the host themselves.
+            if (clientId == AmongUsClient.Instance.ClientId)
+                return;
+
             ClientData targetClient =
                 __instance.GetClient(clientId) ??
                 __instance.GetRecentClient(clientId);
@@ -605,5 +609,32 @@ public static class InnerNetClientKickPlayerAutoBanPatch
         {
             BMLogger.Exception("[BanListMod] InnerNetClientKickPlayerAutoBanPatch error", ex);
         }
+    }
+}
+
+// The host can never be kicked or banned through this mod's paths: a
+// moderator typing /kick or /ban with the host's name or ID, the menu, etc.
+// Skipping the original also means the host can't be removed by accident.
+[HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.KickPlayer))]
+public static class InnerNetClientProtectHostPatch
+{
+    public static bool Prefix(int clientId)
+    {
+        try
+        {
+            if (AmongUsClient.Instance != null &&
+                AmongUsClient.Instance.AmHost &&
+                clientId == AmongUsClient.Instance.ClientId)
+            {
+                BMLogger.LogInfo("[BanListMod] Blocked an attempt to kick/ban the host.");
+                return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            BMLogger.Exception("[BanListMod] InnerNetClientProtectHostPatch error", ex);
+        }
+
+        return true;
     }
 }

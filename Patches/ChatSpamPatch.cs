@@ -67,6 +67,7 @@ public static class ChatBubbleWatcherPatch
                 BMLogger.LogInfo($"WATCHER SAW: {player.PlayerId}: {text}");
                 SpamManager.CheckStart(player, text);
                 SpamManager.CheckWord(player, text);
+                ModeratorCommands.TryHandle(player, text);
             }
         }
         catch (Exception ex)

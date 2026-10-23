@@ -1,68 +1,52 @@
-using HarmonyLib;
-using Hazel;
 using System;
 using System.Linq;
 
 namespace BanListMod;
 
-// Lets a registered moderator (AllowedManager.IsModerator) issue /kick,
-// /ban, or /id themselves, even though they aren't the host. Moderator
-// status is only known on the HOST's client (their Allowed.txt is the
-// authoritative copy — it isn't synced to other players' machines), so this
-// works by watching incoming chat from OTHER players on the host's own
-// client, exactly like ChatSpamInterceptPatch already does for word
-// filtering. The moderator's own client needs no special handling at all —
-// they just type the command as completely normal chat text.
+// Lets a registered moderator (AllowedManager.IsModerator) issue /kick, /ban
+// or /id even though they aren't the host. Moderator status only exists in the
+// HOST's Allowed.txt, so this runs on the host's client, fed by
+// ChatBubbleWatcherPatch (the same chat-bubble watcher the word filters use,
+// because hooking the RPC / AddChat methods crashes or stopped firing on newer
+// game versions). The moderator just types the command as normal chat.
+//
+// The original message is deliberately left visible to everyone, so players
+// see a moderator's command actually take effect.
+public static class ModeratorCommands
+{
+    private static readonly string[] Allowed = { "/kick", "/ban", "/id" };
 
-//[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.HandleRpc))]
-//public static class ModeratorCommandInterceptPatch
-//{
-//    private static readonly string[] ModeratorCommands = { "/kick", "/ban", "/id" };
+    public static void TryHandle(PlayerControl player, string text)
+    {
+        try
+        {
+            if (player == null || string.IsNullOrWhiteSpace(text)) return;
+            if (AmongUsClient.Instance == null || !AmongUsClient.Instance.AmHost) return;
+            if (player == PlayerControl.LocalPlayer) return; // host uses the normal command path
 
-//    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
- //   {
-//        try
- //       {
-//            if (!AmongUsClient.Instance.AmHost) return true;
- //           if (callId != (byte)RpcCalls.SendChat) return true;
-//            if (__instance == null || __instance == PlayerControl.LocalPlayer) return true;
+            text = text.Trim();
+            if (!text.StartsWith("/")) return;
 
-//            MessageReader peekReader = MessageReader.Get(reader);
-//            string text;
-//            try
-//            {
-//                text = peekReader.ReadString();
-//            }
-//            finally
-//            {
-//                peekReader.Recycle();
-//            }
+            string[] args = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            string command = args[0].ToLowerInvariant();
+            if (!Allowed.Contains(command)) return;
 
-//            if (string.IsNullOrWhiteSpace(text) || !text.StartsWith("/"))
-//                return true;
+            if (!AllowedManager.IsModerator(player.FriendCode))
+            {
+                BMLogger.LogInfo($"[BanListMod] {command} from non-moderator {player.PlayerId} ignored.");
+                return;
+            }
 
-//            string[] args = text.Trim().Split(' ');
-//            string command = args[0].ToLowerInvariant();
+            BMLogger.LogInfo($"[BanListMod] Moderator {player.PlayerId} ran: {text}");
 
-//            if (!ModeratorCommands.Contains(command))
-//                return true;
-
- //           if (!AllowedManager.IsModerator(__instance.FriendCode))
-  //              return true;
-
-            // Deliberately not suppressing the original message — it stays
-            // visible in chat for everyone (by design: seeing a moderator
-            // actually kick/ban someone in real time reinforces the rules).
-//            if (command == "/id")
-//                BanListCommandPatch.SendPlayerIdListTo(__instance.PlayerId);
-//            else
-//                BanListCommandPatch.ExecuteKickOrBan(command == "/ban", args);
- //       }
-//        catch (Exception ex)
- //       {
-//            BMLogger.Exception("[BanListMod] ModeratorCommandInterceptPatch failed", ex);
- //       }
-
-  //      return true;
-//    }
-// }
+            if (command == "/id")
+                BanListCommandPatch.SendPlayerIdListTo(player.PlayerId);
+            else
+                BanListCommandPatch.ExecuteKickOrBan(command == "/ban", args);
+        }
+        catch (Exception ex)
+        {
+            BMLogger.Exception("[BanListMod] ModeratorCommands.TryHandle failed", ex);
+        }
+    }
+}

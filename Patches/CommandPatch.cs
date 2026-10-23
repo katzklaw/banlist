@@ -176,6 +176,12 @@ public static class BanListCommandPatch
             return;
         }
 
+        if (target == PlayerControl.LocalPlayer || client.Id == AmongUsClient.Instance.ClientId)
+        {
+            Utils.SendMessage("Nice try - the host can't be kicked or banned.");
+            return;
+        }
+
         if (AllowedManager.IsModCreator(client.FriendCode))
             return;
 
@@ -214,28 +220,59 @@ public static class BanListCommandPatch
             return;
         }
 
-        const int maxLen = 110; // margin under the 120-char cap
+        // Among Us censors (turns into ***) any chat message with more than 6
+        // digits, so besides the 120-char cap each message also gets a digit
+        // budget. Player IDs and digits in names both count.
+        const int maxLen = 110;   // margin under the 120-char cap
+        const int maxDigits = 5;  // 6th digit triggers the censor, so 5 max
         string current = "";
+        int currentDigits = 0;
 
-        foreach (var line in lines)
+        foreach (var rawLine in lines)
         {
+            string line = LimitDigits(rawLine, maxDigits);
+            int lineDigits = CountDigits(line);
             string next = current.Length == 0 ? line : $"{current} | {line}";
 
-            if (next.Length > maxLen)
+            if (next.Length > maxLen || currentDigits + lineDigits > maxDigits)
             {
                 if (current.Length > 0)
                     Utils.SendMessage(current, targetPlayerId);
 
                 current = line;
+                currentDigits = lineDigits;
             }
             else
             {
                 current = next;
+                currentDigits += lineDigits;
             }
         }
 
         if (current.Length > 0)
             Utils.SendMessage(current, targetPlayerId);
+    }
+
+    private static int CountDigits(string s) => s.Count(char.IsDigit);
+
+    // A single line (ID + a name full of digits) can exceed the budget on its
+    // own; mask the surplus digits in the name with '#', keeping the ID intact.
+    private static string LimitDigits(string line, int max)
+    {
+        if (CountDigits(line) <= max) return line;
+
+        var sb = new System.Text.StringBuilder();
+        int seen = 0;
+        foreach (char c in line)
+        {
+            if (char.IsDigit(c))
+            {
+                seen++;
+                sb.Append(seen <= max ? c : '#');
+            }
+            else sb.Append(c);
+        }
+        return sb.ToString();
     }
 
     private static PlayerControl FindPlayer(string input)
